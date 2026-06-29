@@ -16,15 +16,15 @@ name: CI
 on:
   push:
     tags: ["v*"]
-    branches: ["main", "indexing"]
+    branches: ["main"]
   pull_request:
-    branches: ["main", "indexing"]
+    branches: ["main"]
 jobs:
   # Set the job key. The key is displayed as the job name
   # when a job name is not provided
   push-image:
     name: Push Images
-    runs-on: ubuntu-latest
+    runs-on: ["self-hosted", "linux", "large"]
     permissions:
       contents: write
       packages: write
@@ -39,14 +39,6 @@ jobs:
         with:
           go-version: stable
           cache: false
-
-      - name: Install Prerequisites
-        run: |
-          sudo apt-get update
-          sudo apt -y -q install software-properties-common
-          sudo add-apt-repository universe
-          sudo apt-get update
-          sudo apt-get -y -q install lz4 p7zip-full rar unrar
 
       - name: Prepare Build
         run: |

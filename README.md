@@ -1,7 +1,6 @@
 # HTTP Probe
 
-A simple, convenient, reliable, well tested HTTP/HTTPS web server to host static files.
-It can host a local directory or contents of a zip file.
+Simple HTTP/HTTPS health probe tool for Docker and Kubernetes health checks.
 
 ```bash
 # Download (linux amd64, see Downloads for other builds)

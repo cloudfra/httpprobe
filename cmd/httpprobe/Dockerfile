@@ -42,7 +42,7 @@ LABEL \
     org.opencontainers.image.licenses="Apache-2.0" \
     org.opencontainers.image.ref.name="" \
     org.opencontainers.image.title="${BINARY_NAME}" \
-    org.opencontainers.image.description="A simple, convenient, reliable, well tested HTTP/HTTPS web server to host static files." \
+    org.opencontainers.image.description="Simple HTTP/HTTPS health probe tool for Docker and Kubernetes health checks." \
     org.label-schema.schema-version="1.0" \
     org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.url="https://github.com/cloudfra/httpprobe" \
@@ -51,5 +51,5 @@ LABEL \
     org.label-schema.vcs-ref=$VCS_REF \
     org.label-schema.vendor="Jeremy Edwards" \
     org.label-schema.name="${BINARY_NAME}" \
-    org.label-schema.description="A simple, convenient, reliable, well tested HTTP/HTTPS web server to host static files." \
+    org.label-schema.description="Simple HTTP/HTTPS health probe tool for Docker and Kubernetes health checks." \
     org.label-schema.usage="https://github.com/cloudfra/httpprobe"
