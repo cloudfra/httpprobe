@@ -145,8 +145,7 @@ func TestProbe(t *testing.T) {
 					t.Errorf("got error %s", err)
 				}
 			} else {
-				var perr ProbeError
-				if errors.As(err, &perr) {
+				if perr, ok := errors.AsType[ProbeError](err); ok {
 					if perr.Code != tc.wantCode {
 						t.Errorf("want: %v, got %v", tc.wantCode, perr)
 					}
@@ -158,8 +157,7 @@ func TestProbe(t *testing.T) {
 	}
 }
 
-type okHandler struct {
-}
+type okHandler struct{}
 
 func (h *okHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/ok" {
@@ -180,5 +178,11 @@ func (h *okHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusNotImplemented)
 		w.Write([]byte(fmt.Sprintf("'%s' is not handled.", r.URL.Path)))
+	}
+}
+
+func BenchmarkNormalizeURL(b *testing.B) {
+	for b.Loop() {
+		normalizeURL("https://example.com")
 	}
 }

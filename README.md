@@ -1,5 +1,11 @@
 # HTTP Probe
 
+<!-- markdownlint-disable-next-line MD033 -->
+<img src="logo.png" alt="Logo" width="64" height="64" />
+
+[![CI](https://github.com/cloudfra/httpprobe/actions/workflows/deploy.yaml/badge.svg)](https://github.com/cloudfra/httpprobe/actions/workflows/deploy.yaml) [![Go Reference](https://pkg.go.dev/badge/github.com/cloudfra/httpprobe.svg)](https://pkg.go.dev/github.com/cloudfra/httpprobe) [![codecov](https://codecov.io/gh/cloudfra/httpprobe/graph/badge.svg?token=UVApxhg6z7)](https://codecov.io/gh/cloudfra/httpprobe)
+
+
 Simple HTTP/HTTPS health probe tool for Docker and Kubernetes health checks.
 
 ```bash

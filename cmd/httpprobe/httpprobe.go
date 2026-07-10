@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package main provides a command-line utility to probe HTTP/HTTPS endpoints for availability.
 package main
 
 import (
 	"crypto/x509"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"time"
-
-	"errors"
 
 	"github.com/cloudfra/httpprobe/pkg/httpprobe"
 )
@@ -48,6 +48,7 @@ func exitCode(exitCode int) {
 }
 
 func run(url string, publicCertFile string, timeout time.Duration) int {
+	flag.Parse()
 	certData, err := readPublicCertificate(publicCertFile)
 	if err != nil {
 		return errnoFileNotFound

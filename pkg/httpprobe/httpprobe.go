@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Package httpprobe provides a simple HTTP probe utility to check the availability of HTTP/HTTPS endpoints.
 package httpprobe
 
 import (
@@ -23,6 +24,7 @@ import (
 	"time"
 )
 
+// ProbeError represents an error that occurred during the HTTP probe, including the HTTP status code and an error message.
 type ProbeError struct {
 	Code    int
 	Message string
@@ -32,12 +34,14 @@ func (p ProbeError) Error() string {
 	return fmt.Sprintf("HTTP Code: %d - %s", p.Code, p.Message)
 }
 
+// Args holds the arguments for the Probe function.
 type Args struct {
 	CertificatePool *x509.CertPool
 	Timeout         time.Duration
 	URL             string
 }
 
+// Probe performs an HTTP GET request to the specified URL and returns an error if the request fails or if the response status code is not in the 2xx range.
 func Probe(args Args) error {
 	u := normalizeURL(args.URL)
 
