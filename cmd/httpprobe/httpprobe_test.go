@@ -36,7 +36,7 @@ func TestProbe(t *testing.T) {
 	if err := os.WriteFile(certFile, pem.EncodeToMemory(&pem.Block{
 		Type:  "CERTIFICATE",
 		Bytes: secure.Certificate().Raw,
-	}), 0644); err != nil {
+	}), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	content, err := os.ReadFile(certFile)
@@ -82,10 +82,9 @@ func TestProbe(t *testing.T) {
 	}
 }
 
-type okHandler struct {
-}
+type okHandler struct{}
 
-func (h *okHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *okHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("ok"))
 }

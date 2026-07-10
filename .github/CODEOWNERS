@@ -1,4 +1,4 @@
-# Copyright 2021 Jeremy Edwards
+# Copyright 2026 Cloudfra
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,22 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference
-version: 2
-updates:
-  - package-ecosystem: "docker"
-    directory: "/"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "docker-compose"
-    directory: "/"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "gomod"
-    directory: "/"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "daily"
+# Default owner for everything in this repo.
+# TODO: switch to @cloudfra/maintainers once that team exists in the org
+# (currently `gh api orgs/cloudfra/teams` returns no teams).
+* @jeremyje

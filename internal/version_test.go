@@ -1,4 +1,4 @@
-// Copyright 2022 Jeremy Edwards
+// Copyright 2026 Cloudfra
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,8 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package httpprobe
+package internal
 
-var (
-	version = "UNKNOWN"
-)
+import "testing"
+
+func TestVersion(t *testing.T) {
+	if Version() == "" {
+		t.Errorf("Version() is empty, %q", Version())
+	}
+}
+
+func TestBuildstamp(t *testing.T) {
+	if Buildstamp() == "" {
+		t.Errorf("Buildstamp() is empty, %q", Buildstamp())
+	}
+}

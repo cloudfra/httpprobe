@@ -1,4 +1,4 @@
-# Copyright 2022 Jeremy Edwards
+# Copyright 2026 Cloudfra
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# https://docs.codecov.com/docs/codecovyml-reference
-
 coverage:
-  range: 70..100
-  round: down
-  precision: 2
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+    patch:
+      default:
+        target: 80%
