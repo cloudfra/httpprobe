@@ -18,6 +18,7 @@ import (
 	"crypto/x509"
 	"errors"
 	"fmt"
+	"html"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -41,9 +42,13 @@ func TestProbeError(t *testing.T) {
 }
 
 func TestProbe(t *testing.T) {
-	insecure := httptest.NewServer(&okHandler{})
+	insecure := httptest.NewServer(&okHandler{
+		tb: t,
+	})
 	defer insecure.Close()
-	secure := httptest.NewTLSServer(&okHandler{})
+	secure := httptest.NewTLSServer(&okHandler{
+		tb: t,
+	})
 	defer secure.Close()
 	pool := x509.NewCertPool()
 	pool.AddCert(secure.Certificate())
@@ -133,11 +138,10 @@ func TestProbe(t *testing.T) {
 		},
 	}
 
-	//time.Sleep(time.Second)
+	// time.Sleep(time.Second)
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			//t.Parallel()
+			// t.Parallel()
 
 			err := Probe(tc.args)
 			if tc.wantCode == 0 {
@@ -157,27 +161,38 @@ func TestProbe(t *testing.T) {
 	}
 }
 
-type okHandler struct{}
+type okHandler struct {
+	tb testing.TB
+}
 
 func (h *okHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path == "/ok" {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("ok"))
-	} else if r.URL.Path == "/delay" {
+	switch {
+	case r.URL.Path == "/ok":
+		h.Write(w, "ok", http.StatusOK)
+	case r.URL.Path == "/delay":
 		time.Sleep(time.Millisecond * 100)
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("ok"))
-	} else if r.URL.Path == "/fail" {
-		w.WriteHeader(http.StatusBadGateway)
-		w.Write([]byte("failure"))
-	} else if strings.HasPrefix(r.URL.Path, "/code/") {
+		h.Write(w, "ok", http.StatusOK)
+	case r.URL.Path == "/fail":
+		h.Write(w, "failure", http.StatusBadGateway)
+	case strings.HasPrefix(r.URL.Path, "/code/"):
 		parts := strings.Split(r.URL.Path, "/")
 		code, err := strconv.Atoi(parts[len(parts)-1])
-		w.WriteHeader(code)
-		w.Write([]byte(fmt.Sprintf("returning code '%d', '%s'", code, err)))
-	} else {
-		w.WriteHeader(http.StatusNotImplemented)
-		w.Write([]byte(fmt.Sprintf("'%s' is not handled.", r.URL.Path)))
+		if err != nil {
+			code = http.StatusInternalServerError
+		}
+		h.Write(w, fmt.Sprintf("returning code '%d', '%s'", code, err), code)
+	default:
+		h.Write(w, fmt.Sprintf("'%s' is not handled.", html.EscapeString(r.URL.Path)), http.StatusNotImplemented)
+	}
+}
+
+func (h *okHandler) Write(w http.ResponseWriter, body string, code int) {
+	wantSize := len(body)
+	w.WriteHeader(code)
+	if gotSize, err := w.Write([]byte(body)); err != nil {
+		h.tb.Errorf("failed to write response: %v", err)
+	} else if gotSize != wantSize {
+		h.tb.Errorf("failed to write response, got %d bytes, want %d bytes", gotSize, wantSize)
 	}
 }
 

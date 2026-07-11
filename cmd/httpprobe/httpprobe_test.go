@@ -17,6 +17,7 @@ package main
 import (
 	"encoding/pem"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -36,10 +37,13 @@ func TestProbe(t *testing.T) {
 	if err := os.WriteFile(certFile, pem.EncodeToMemory(&pem.Block{
 		Type:  "CERTIFICATE",
 		Bytes: secure.Certificate().Raw,
-	}), 0o644); err != nil {
+	}), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	content, err := os.ReadFile(certFile)
+	content, err := os.ReadFile(filepath.Clean(certFile))
+	if err != nil {
+		t.Fatalf("failed to read cert file, %q: %v", certFile, err)
+	}
 	t.Logf("%s %s", content, err)
 
 	tests := []struct {
@@ -72,7 +76,6 @@ func TestProbe(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(fmt.Sprintf("%s_%s", tc.url, tc.certFile), func(t *testing.T) {
 			got := run(tc.url, tc.certFile, time.Second)
 			if got != tc.wantCode {
@@ -85,6 +88,10 @@ func TestProbe(t *testing.T) {
 type okHandler struct{}
 
 func (h *okHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("ok"))
+	if _, err := w.Write([]byte("ok")); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Printf("failed to write response: %v", err)
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
 }

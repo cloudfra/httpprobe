@@ -16,6 +16,7 @@
 package httpprobe
 
 import (
+	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
@@ -58,12 +59,27 @@ func Probe(args Args) error {
 		Timeout:   args.Timeout,
 		Transport: t,
 	}
+	ctx := context.Background()
 
-	resp, err := c.Get(u)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
 		return ProbeError{
 			Code:    http.StatusServiceUnavailable,
 			Message: fmt.Sprintf("%s is not available, %v", u, err),
+		}
+	}
+
+	resp, err := c.Do(req)
+	if err != nil {
+		return ProbeError{
+			Code:    http.StatusServiceUnavailable,
+			Message: fmt.Sprintf("%s is not available, %v", u, err),
+		}
+	}
+	if err := resp.Body.Close(); err != nil {
+		return ProbeError{
+			Code:    http.StatusServiceUnavailable,
+			Message: fmt.Sprintf("%s content body failed on Close(), %v", u, err),
 		}
 	}
 

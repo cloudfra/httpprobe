@@ -21,6 +21,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/cloudfra/httpprobe/pkg/httpprobe"
@@ -60,8 +61,7 @@ func run(url string, publicCertFile string, timeout time.Duration) int {
 		Timeout:         timeout,
 	})
 
-	var perr httpprobe.ProbeError
-	if errors.As(err, &perr) {
+	if perr, ok := errors.AsType[httpprobe.ProbeError](err); ok {
 		return perr.Code
 	}
 
@@ -73,7 +73,7 @@ func readPublicCertificate(publicCertFile string) (*x509.CertPool, error) {
 		return nil, nil
 	}
 
-	data, err := os.ReadFile(publicCertFile)
+	data, err := os.ReadFile(filepath.Clean(publicCertFile))
 	if err != nil {
 		return nil, fmt.Errorf("cannot read file %s, %w", publicCertFile, err)
 	}
