@@ -16,7 +16,7 @@ REGISTRY = ghcr.io/cloudfra
 PROTOS =
 TEST_ASSETS =
 ASSETS = $(PROTOS)
-GO_PACKAGE = github.com/cloudfra/template-go
+GO_PACKAGE = github.com/cloudfra/httpprobe
 ALL_APPS = httpprobe
 
 include Makefile_build.mk
