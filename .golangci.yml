@@ -32,6 +32,6 @@ linters:
   disable:
     - revive
   exclusions:
-    rules:
-      - path: "build"
-        linters: ["all"]
+    paths:
+      - "build/"
+      - "third_party/"
