@@ -39,6 +39,7 @@ var (
 )
 
 func main() {
+	flag.Parse()
 	exitCode(run(*url, *publicCertificate, *timeout))
 }
 
@@ -49,7 +50,6 @@ func exitCode(exitCode int) {
 }
 
 func run(url string, publicCertFile string, timeout time.Duration) int {
-	flag.Parse()
 	certData, err := readPublicCertificate(publicCertFile)
 	if err != nil {
 		return errnoFileNotFound
@@ -80,7 +80,7 @@ func readPublicCertificate(publicCertFile string) (*x509.CertPool, error) {
 
 	pool := x509.NewCertPool()
 	if !pool.AppendCertsFromPEM(data) {
-		return nil, fmt.Errorf("cannot parse certificate file '%s', %w", publicCertFile, err)
+		return nil, fmt.Errorf("cannot parse certificate file '%s'", publicCertFile)
 	}
 	return pool, nil
 }

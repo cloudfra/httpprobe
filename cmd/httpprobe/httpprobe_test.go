@@ -85,13 +85,36 @@ func TestProbe(t *testing.T) {
 	}
 }
 
+func TestReadPublicCertificate(t *testing.T) {
+	t.Run("empty path", func(t *testing.T) {
+		pool, err := readPublicCertificate("")
+		if pool != nil || err != nil {
+			t.Errorf("want (nil, nil), got (%v, %v)", pool, err)
+		}
+	})
+	t.Run("file not found", func(t *testing.T) {
+		_, err := readPublicCertificate("nonexistent-file.pem")
+		if err == nil {
+			t.Error("want error for nonexistent file")
+		}
+	})
+	t.Run("invalid PEM", func(t *testing.T) {
+		f := filepath.Join(t.TempDir(), "bad.pem")
+		if err := os.WriteFile(f, []byte("not a certificate"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		_, err := readPublicCertificate(f)
+		if err == nil {
+			t.Error("want error for invalid PEM data")
+		}
+	})
+}
+
 type okHandler struct{}
 
 func (h *okHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write([]byte("ok")); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
 		log.Printf("failed to write response: %v", err)
-	} else {
-		w.WriteHeader(http.StatusOK)
 	}
 }
