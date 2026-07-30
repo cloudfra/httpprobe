@@ -196,6 +196,28 @@ func (h *okHandler) Write(w http.ResponseWriter, body string, code int) {
 	}
 }
 
+func TestNormalizeURL(t *testing.T) {
+	tests := []struct {
+		name string
+		url  string
+		want string
+	}{
+		{name: "empty", url: "", want: ""},
+		{name: "simple http", url: "http://example.com", want: "http://example.com"},
+		{name: "with path", url: "http://example.com/path", want: "http://example.com/path"},
+		{name: "with query", url: "http://example.com/path?key=value", want: "http://example.com/path?key=value"},
+		{name: "https", url: "https://example.com:443/secure", want: "https://example.com:443/secure"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := normalizeURL(tc.url)
+			if diff := cmp.Diff(tc.want, got); diff != "" {
+				t.Errorf("normalizeURL(%q) mismatch (-want +got):\n%s", tc.url, diff)
+			}
+		})
+	}
+}
+
 func BenchmarkNormalizeURL(b *testing.B) {
 	for b.Loop() {
 		normalizeURL("https://example.com")
