@@ -5,12 +5,11 @@
 
 [![CI](https://github.com/cloudfra/httpprobe/actions/workflows/deploy.yaml/badge.svg)](https://github.com/cloudfra/httpprobe/actions/workflows/deploy.yaml) [![Go Reference](https://pkg.go.dev/badge/github.com/cloudfra/httpprobe.svg)](https://pkg.go.dev/github.com/cloudfra/httpprobe) [![codecov](https://codecov.io/gh/cloudfra/httpprobe/graph/badge.svg?token=UVApxhg6z7)](https://codecov.io/gh/cloudfra/httpprobe)
 
-
 Simple HTTP/HTTPS health probe tool for Docker and Kubernetes health checks.
 
 ```bash
 # Download (linux amd64, see Downloads for other builds)
-curl -o httpprobe -O -L https://github.com/cloudfra/httpprobe/releases/download/v0.1.0/httpprobe-amd64; chmod +x httpprobe
+curl -o httpprobe -O -L https://github.com/cloudfra/httpprobe/releases/download/latest/httpprobe-amd64; chmod +x httpprobe
 
 # Host the current directory.
 ./httpprobe
@@ -36,12 +35,12 @@ curl -o httpprobe -O -L https://github.com/cloudfra/httpprobe/releases/download/
 
 |   OS   | Arch  | Link
 |--------|-------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-|Linux   | amd64 | `curl -O -L https://github.com/cloudfra/httpprobe/releases/download/v0.1.0/httpprobe-amd64`
-|Linux   | arm   | `curl -O -L https://github.com/cloudfra/httpprobe/releases/download/v0.1.0/httpprobe-arm`
-|Linux   | arm64 | `curl -O -L https://github.com/cloudfra/httpprobe/releases/download/v0.1.0/httpprobe-arm64`
-|Windows | amd64 | `$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri "https://github.com/cloudfra/httpprobe/releases/download/v0.1.0/httpprobe-amd64.exe" -OutFile "httpprobe-amd64.exe" -UseBasicParsing`
-|macOS   | amd64 | `curl -O -L https://github.com/cloudfra/httpprobe/releases/download/v0.1.0/httpprobe-amd64-darwin`
-|macOS   | arm64 | `curl -O -L https://github.com/cloudfra/httpprobe/releases/download/v0.1.0/httpprobe-arm64-darwin`
+|Linux   | amd64 | `curl -O -L https://github.com/cloudfra/httpprobe/releases/download/v0.5.0/httpprobe-amd64`
+|Linux   | arm   | `curl -O -L https://github.com/cloudfra/httpprobe/releases/download/v0.5.0/httpprobe-arm`
+|Linux   | arm64 | `curl -O -L https://github.com/cloudfra/httpprobe/releases/download/v0.5.0/httpprobe-arm64`
+|Windows | amd64 | `$ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri "https://github.com/cloudfra/httpprobe/releases/download/v0.5.0/httpprobe-amd64.exe" -OutFile "httpprobe-amd64.exe" -UseBasicParsing`
+|macOS   | amd64 | `curl -O -L https://github.com/cloudfra/httpprobe/releases/download/v0.5.0/httpprobe-amd64-darwin`
+|macOS   | arm64 | `curl -O -L https://github.com/cloudfra/httpprobe/releases/download/v0.5.0/httpprobe-arm64-darwin`
 
 ## Docker Images
 
@@ -53,20 +52,13 @@ docker pull docker.io/cloudfra/httpprobe
 
 ## Build
 
-![example workflow](https://github.com/cloudfra/httpprobe/actions/workflows/deploy.yml/badge.svg) [![Go Report Card](https://goreportcard.com/badge/github.com/cloudfra/httpprobe)](https://goreportcard.com/report/github.com/cloudfra/httpprobe) [![Go Reference](https://pkg.go.dev/badge/github.com/cloudfra/httpprobe.svg)](https://pkg.go.dev/github.com/cloudfra/httpprobe) [![codecov](https://codecov.io/gh/cloudfra/httpprobe/branch/main/graph/badge.svg)](https://codecov.io/gh/cloudfra/httpprobe)
-
-Install [Go 1.24 or newer](https://golang.org/dl/).
-
 ```bash
 # Clone the Codebase
 git clone git@github.com:cloudfra/httpprobe.git
 # Build the Code
 make -j$(nproc)
-```
-
-## Test
-
-```bash
+# Test
 make test
-make bench
+# Presubmit
+make presubmit
 ```
