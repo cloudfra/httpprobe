@@ -17,7 +17,7 @@ package main
 import (
 	"encoding/pem"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -115,6 +115,6 @@ type okHandler struct{}
 func (h *okHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write([]byte("ok")); err != nil {
-		log.Printf("failed to write response: %v", err)
+		slog.Error("failed to write response", "error", err)
 	}
 }
