@@ -26,15 +26,15 @@ changing:
 make lint   # gofmt/go vet, gofumpt, golangci-lint, revive, hadolint,
             # actionlint, govulncheck, tflint/terraform fmt
 make test   # unit test suite
-make run    # build and run the example binary
+make run    # build and run the httpprobe binary
 ```
 
-See the "Common make targets" table in the [README](README.md#common-make-targets)
+See the "Common make targets" table in the [README](README.md)
 for the rest (benchmarks, Terraform tests, Docker images, etc.).
 
 ## Adding a new `cmd/` binary
 
-Per the README's [Project layout](README.md#project-layout), create a new
+Per the README's [Project layout](README.md), create a new
 directory under `cmd/` with a `main` package, e.g. `cmd/myapp/myapp.go`.
 The build system picks it up automatically — no Makefile changes needed
 to build it with `make`. To also cross-compile, package, or release it,

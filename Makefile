@@ -18,5 +18,6 @@ TEST_ASSETS =
 ASSETS = $(PROTOS)
 GO_PACKAGE = github.com/cloudfra/httpprobe
 ALL_APPS = httpprobe
+PRODUCTION=1
 
 include Makefile_build.mk
