@@ -20,6 +20,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"time"
@@ -40,11 +41,18 @@ type Args struct {
 	CertificatePool *x509.CertPool
 	Timeout         time.Duration
 	URL             string
+	// Debug enables debug logging of the probe via the default slog logger.
+	Debug bool
 }
 
 // Probe performs an HTTP GET request to the specified URL and returns an error if the request fails or if the response status code is not in the 2xx range.
 func Probe(args Args) error {
 	u := normalizeURL(args.URL)
+	debugf := func(msg string, attrs ...any) {}
+	if args.Debug {
+		debugf = slog.Default().Debug
+	}
+	debugf("starting probe", "url", u, "timeout", args.Timeout, "custom_ca", args.CertificatePool != nil)
 
 	t := &http.Transport{}
 	if args.CertificatePool != nil {
@@ -63,20 +71,25 @@ func Probe(args Args) error {
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
+		debugf("failed to create request", "url", u, "error", err)
 		return ProbeError{
 			Code:    http.StatusServiceUnavailable,
 			Message: fmt.Sprintf("%s is not available, %v", u, err),
 		}
 	}
 
+	start := time.Now()
 	resp, err := c.Do(req)
 	if err != nil {
+		debugf("request failed", "url", u, "elapsed", time.Since(start), "error", err)
 		return ProbeError{
 			Code:    http.StatusServiceUnavailable,
 			Message: fmt.Sprintf("%s is not available, %v", u, err),
 		}
 	}
+	debugf("received response", "url", u, "status", resp.Status, "elapsed", time.Since(start))
 	if err := resp.Body.Close(); err != nil {
+		debugf("failed to close response body", "url", u, "error", err)
 		return ProbeError{
 			Code:    http.StatusServiceUnavailable,
 			Message: fmt.Sprintf("%s content body failed on Close(), %v", u, err),
@@ -84,8 +97,10 @@ func Probe(args Args) error {
 	}
 
 	if 200 <= resp.StatusCode && resp.StatusCode < 300 {
+		debugf("probe succeeded", "url", u, "status_code", resp.StatusCode)
 		return nil
 	}
+	debugf("probe failed", "url", u, "status_code", resp.StatusCode)
 	return ProbeError{
 		Code:    resp.StatusCode,
 		Message: resp.Status,

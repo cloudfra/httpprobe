@@ -77,7 +77,7 @@ func TestProbe(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(fmt.Sprintf("%s_%s", tc.url, tc.certFile), func(t *testing.T) {
-			got := run(tc.url, tc.certFile, time.Second)
+			got := run(tc.url, tc.certFile, time.Second, false)
 			if got != tc.wantCode {
 				t.Errorf("want: %v, got %v", tc.wantCode, got)
 			}

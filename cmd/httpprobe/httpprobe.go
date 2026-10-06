@@ -20,6 +20,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"time"
@@ -36,11 +37,15 @@ var (
 	publicCertificate = flag.String("public-certificate", "", "X.509 public certificate file to validate.")
 	url               = flag.String("url", "http://localhost:8080", "URL of the HTTP/HTTPS endpoint to probe for availability.")
 	timeout           = flag.Duration("timeout", time.Second*5, "Time to wait for a response before giving up.")
+	debug             = flag.Bool("debug", false, "Log debug information about the probe to stderr.")
 )
 
 func main() {
 	flag.Parse()
-	exitCode(run(*url, *publicCertificate, *timeout))
+	if *debug {
+		slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug})))
+	}
+	exitCode(run(*url, *publicCertificate, *timeout, *debug))
 }
 
 func exitCode(exitCode int) {
@@ -49,7 +54,7 @@ func exitCode(exitCode int) {
 	}
 }
 
-func run(url string, publicCertFile string, timeout time.Duration) int {
+func run(url string, publicCertFile string, timeout time.Duration, debug bool) int {
 	certData, err := readPublicCertificate(publicCertFile)
 	if err != nil {
 		return errnoFileNotFound
@@ -59,6 +64,7 @@ func run(url string, publicCertFile string, timeout time.Duration) int {
 		URL:             url,
 		CertificatePool: certData,
 		Timeout:         timeout,
+		Debug:           debug,
 	})
 
 	if perr, ok := errors.AsType[httpprobe.ProbeError](err); ok {
