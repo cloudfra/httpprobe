@@ -15,10 +15,12 @@
 package httpprobe
 
 import (
+	"bytes"
 	"crypto/x509"
 	"errors"
 	"fmt"
 	"html"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -158,6 +160,32 @@ func TestProbe(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestProbeDebugLogging(t *testing.T) {
+	srv := httptest.NewServer(&okHandler{tb: t})
+	defer srv.Close()
+
+	var buf bytes.Buffer
+	prev := slog.Default()
+	slog.SetDefault(slog.New(slog.NewTextHandler(&buf, &slog.HandlerOptions{Level: slog.LevelDebug})))
+	defer slog.SetDefault(prev)
+
+	if err := Probe(Args{URL: srv.URL + "/ok"}); err != nil {
+		t.Fatalf("got error %s", err)
+	}
+	if buf.Len() != 0 {
+		t.Errorf("want no logs when Debug is false, got:\n%s", buf.String())
+	}
+
+	if err := Probe(Args{URL: srv.URL + "/ok", Debug: true}); err != nil {
+		t.Fatalf("got error %s", err)
+	}
+	for _, want := range []string{"level=DEBUG", "starting probe", "received response", "probe succeeded"} {
+		if !strings.Contains(buf.String(), want) {
+			t.Errorf("want log output to contain %q, got:\n%s", want, buf.String())
+		}
 	}
 }
 
